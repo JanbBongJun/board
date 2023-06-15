@@ -23,6 +23,7 @@ router.get("/posts", async (req, res) => {
       page: pageNum,
       data: data,
     });
+    res.send({data:data});
   } catch (err) {
     return res
       .status(400)
@@ -65,7 +66,8 @@ router.get("/posts/:postId", async (req, res) => {
     if (!data) {
       res.status(404).json({ msg: "데이터를 찾을 수 없습니다" });
     } else {
-      res.status(200).json({ data: data });
+      res.status(200).json({ success:true });
+      res.send({data:data});
     }
   } catch (err) {
     res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });

@@ -40,6 +40,7 @@ router.get("/posts/:postId/comments", async (req, res) => {
   try {
     const comments = await Comments.find({ postId }).select("-password -postId")
     console.log(comments)
+    res.send({data:comments});
     return res.status(200).json({
       success: true,
       data: comments
