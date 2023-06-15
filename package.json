@@ -1,11 +1,12 @@
 {
-  "name": "spa_notice_board",
+  "name": "ok",
   "version": "1.0.0",
-  "description": "",
+  "description": "//전역적인 경로나 기능을 다루는 라우터를 직접 생성",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
