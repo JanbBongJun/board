@@ -12,6 +12,7 @@ router.get("/posts", async (req, res) => {
       .select("-content")
       .skip((pageNum - 1) * pageSize)
       .limit(pageSize);
+    console.log(data);
     if (!data) {
       res.status(404).json({
         success: false,
@@ -39,16 +40,17 @@ router.post("/posts", (req, res) => {
         return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
       }
 
-      await Posts.create({postId, user, password, title, content});
+      await Posts.create({ postId, user, password, title, content });
       res.status(200).json({ msg: "잘 저장됬슈" });
     } catch (err) {
       if (err.code === 11000) {
         //postId값이 중복됬을경우에만 다시 실행
         savePost();
       } else {
-        res.status(500).json({ 
-          success:false,
-          msg: "예기치 못한 오률 발생" });
+        res.status(500).json({
+          success: false,
+          msg: "예기치 못한 오률 발생",
+        });
       }
     }
   };
@@ -65,7 +67,7 @@ router.get("/posts/:postId", async (req, res) => {
     if (!data) {
       res.status(404).json({ msg: "데이터를 찾을 수 없습니다" });
     } else {
-      res.status(200).json({ success:true });
+      res.status(200).json({ success: true });
     }
   } catch (err) {
     res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
@@ -111,9 +113,10 @@ router.delete("/posts/:postId", async (req, res) => {
     }
     res.status(200).json({ msg: "게시글을 삭제하였습니다." });
   } catch (err) {
-    return res.status(500).json({ 
-      error:err,
-      msg: "예기치 못한 오률 발생" });
+    return res.status(500).json({
+      error: err,
+      msg: "예기치 못한 오률 발생",
+    });
   }
 });
 
