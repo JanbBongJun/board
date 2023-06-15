@@ -13,7 +13,7 @@ router.get("/posts", async (req, res) => {
       .skip((pageNum - 1) * pageSize)
       .limit(pageSize);
     console.log(data);
-    if (!data) {
+    if (data.length === 0) {
       res.status(404).json({
         success: false,
         msg: "404 Not Found",

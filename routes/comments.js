@@ -40,6 +40,9 @@ router.get("/posts/:postId/comments", async (req, res) => {
   try {
     const comments = await Comments.find({ postId }).select("-password -postId")
     console.log(comments)
+    if(comments.length===0){
+      res.status(404).json({msg:"404"})
+    }
     return res.status(200).json({
       success: true,
       data: comments
