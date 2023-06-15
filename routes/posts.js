@@ -15,16 +15,18 @@ router.get("/posts", async (req, res) => {
       .limit(Number(pageSize));
     console.log(data);
     if (data.length === 0) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         msg: "404 Not Found",
       });
+      return;
     } else {
-      return res.status(200).json({
+      res.status(200).json({
         success: true,
         page: pageNum,
         data: data,
       });
+      return;
     }
   } catch (err) {
     return res
@@ -70,7 +72,7 @@ router.get("/posts/:postId", async (req, res) => {
     if (!data) {
       return res.status(404).json({ msg: "데이터를 찾을 수 없습니다" });
     } else {
-      return res.status(200).json({ success: true });
+      return res.status(200).json({ success: true, data:data});
     }
   } catch (err) {
     return res.status(500).json({ msg: "예기치 못한 오류 발생" });
