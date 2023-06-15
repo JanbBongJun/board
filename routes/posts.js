@@ -3,7 +3,7 @@ const router = express.Router();
 const Posts = require("../schemas/post.js");
 const { v4: uuidv4 } = require("uuid");
 
-//쿼리 스트링을 받아서 페이지네이션
+// 쿼리 스트링을 받아서 페이지네이션
 router.get("/posts", async (req, res) => {
   const pageNum = req.query.pageNum ? req.query.pageNum : 1;
   const pageSize = req.query.pageSize ? req.query.pageSize : 10;
@@ -14,66 +14,66 @@ router.get("/posts", async (req, res) => {
       .limit(pageSize);
     console.log(data);
     if (data.length === 0) {
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
         msg: "404 Not Found",
       });
+    } else {
+      return res.status(200).json({
+        success: true,
+        page: pageNum,
+        data: data,
+      });
     }
-    res.status(200).json({
-      success: true,
-      page: pageNum,
-      data: data,
-    });
   } catch (err) {
     return res
-      .status(400)
-      .json({ success: false, msg: "데이터 형식이 올바르지 않습니다" });
+      .status(500)
+      .json({ success: false, msg: "예기치 못한 오류 발생" });
   }
 });
 
-router.post("/posts", (req, res) => {
-  const savePost = async () => {
-    try {
-      const postId = uuidv4(); //임의의 문자열 생성
-      const { user, password, title, content } = req.body;
-      if (!user || !password || !title || !content) {
-        return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
-      }
-
-      await Posts.create({ postId, user, password, title, content });
-      res.status(200).json({ msg: "잘 저장됬슈" });
-    } catch (err) {
-      if (err.code === 11000) {
-        //postId값이 중복됬을경우에만 다시 실행
-        savePost();
-      } else {
-        res.status(500).json({
-          success: false,
-          msg: "예기치 못한 오률 발생",
-        });
-      }
+router.post("/posts", async (req, res) => {
+  try {
+    const postId = uuidv4(); // 임의의 문자열 생성
+    const { user, password, title, content } = req.body;
+    if (!user || !password || !title || !content) {
+      return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
     }
-  };
-  savePost();
+
+    await Posts.create({ postId, user, password, title, content });
+    return res.status(200).json({ msg: "잘 저장됬슈" });
+  } catch (err) {
+    if (err.code === 11000) {
+      // postId값이 중복됬을경우에만 다시 실행
+      return res.status(500).json({
+        success: false,
+        msg: "중복된 postId가 있습니다",
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        msg: "예기치 못한 오류 발생",
+      });
+    }
+  }
 });
 
 router.get("/posts/:postId", async (req, res) => {
   const { postId } = req.params;
   if (!postId) {
-    res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
+    return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
   }
   try {
     const data = await Posts.findOne({ postId }).select("-password");
     if (!data) {
-      res.status(404).json({ msg: "데이터를 찾을 수 없습니다" });
+      return res.status(404).json({ msg: "데이터를 찾을 수 없습니다" });
     } else {
-      res.status(200).json({ success: true });
+      return res.status(200).json({ success: true });
     }
   } catch (err) {
-    res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
+    return res.status(500).json({ msg: "예기치 못한 오류 발생" });
   }
 });
-
 router.put("/posts/:postId", async (req, res) => {
   const { postId } = req.params;
   const { password, title, content } = req.body;
@@ -92,11 +92,11 @@ router.put("/posts/:postId", async (req, res) => {
     if (!updatePost) {
       return res
         .status(404)
-        .json({ msg: "pw 또는 postIdrk 올바르지 않습니다" });
+        .json({ msg: "비밀번호 또는 postId가 올바르지 않습니다" });
     }
     return res.status(200).json({ msg: "수정이 정상적으로 완료되었습니다" });
   } catch (err) {
-    return res.status(500).json({ msg: "예기치 못한 오률 발생" });
+    return res.status(500).json({ msg: "예기치 못한 오류 발생" });
   }
 });
 
@@ -111,11 +111,11 @@ router.delete("/posts/:postId", async (req, res) => {
     if (!data) {
       return res.status(404).json({ msg: "게시글 조회에 실패하였습니다" });
     }
-    res.status(200).json({ msg: "게시글을 삭제하였습니다." });
+    return res.status(200).json({ msg: "게시글을 삭제하였습니다." });
   } catch (err) {
     return res.status(500).json({
       error: err,
-      msg: "예기치 못한 오률 발생",
+      msg: "예기치 못한 오류 발생",
     });
   }
 });

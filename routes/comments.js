@@ -51,7 +51,6 @@ router.get("/posts/:postId/comments", async (req, res) => {
     res.status(500).json({ msg: "예기치 못한 오률 발생" });
   }
 });
-
 router.put("/posts/:postId/comments/:commentId", async (req, res) => {
   const { postId, commentId } = req.params;
   const { password, comment } = req.body;
@@ -61,15 +60,17 @@ router.put("/posts/:postId/comments/:commentId", async (req, res) => {
     return res.status(400).json({ msg: "댓글 또는 PW를 입력해 주세요" });
   }
   try {
-    const comments = await Comments.findOneAndUpdate(
+    const updatedComment = await Comments.findOneAndUpdate(
       { postId, commentId, password },
       { comment },
       { new: true }
     );
-    res.status(200).json({ msg: "댓글이 정상적으로 수정되었습니다." });
-
+    if (!updatedComment) {
+      return res.status(404).json({ msg: "댓글을 찾을 수 없습니다." });
+    }
+    return res.status(200).json({ msg: "댓글이 정상적으로 수정되었습니다." });
   } catch (err) {
-    res.status(500).json({ msg: "예기치 못한 오률 발생" });
+    return res.status(500).json({ msg: "예기치 못한 오류 발생" });
   }
 });
 
@@ -79,17 +80,16 @@ router.delete("/posts/:postId/comments/:commentId", async (req, res) => {
     return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
   }
   try {
-    const deletedComments = await Comments.findOneAndDelete({
+    const deletedComment = await Comments.findOneAndDelete({
       postId,
       commentId,
     });
-
-    if (!deletedComments) {
-      return res.status(404).json({ msg: "댓글 조회에 실패하였습니다." });
+    if (!deletedComment) {
+      return res.status(404).json({ msg: "댓글을 찾을 수 없습니다." });
     }
-    res.status(200).json({ msg: "댓글이 성공적으로 삭제되었습니다." });
+    return res.status(200).json({ msg: "댓글이 성공적으로 삭제되었습니다." });
   } catch (err) {
-    res.status(500).json({ msg: "예기치 못한 오류 발생" });
+    return res.status(500).json({ msg: "예기치 못한 오류 발생" });
   }
 });
 
