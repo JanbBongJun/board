@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Comments = require("../schemas/comment.js");
+const { v4: uuidv4 } = require("uuid");
 
 router.post("/posts/:postId/comments", async (req, res) => {
   const { postId } = req.params;
