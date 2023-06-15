@@ -7,23 +7,27 @@ const { v4: uuidv4 } = require("uuid");
 router.get("/posts", async (req, res) => {
   const pageNum = req.query.pageNum ? req.query.pageNum : 1;
   const pageSize = req.query.pageSize ? req.query.pageSize : 10;
-  await Posts.find()
-    .select("-content")
-    .skip((pageNum - 1) * pageSize)
-    .limit(pageSize)
-    .exec((err, data) => {
-      if (err) {
-        res.status(404).json({
-          success: false,
-          errorMessage: "404 Not Found",
-        });
-      } else {
-        res.status(200).json({
-          page: pageNum,
-          data: data,
-        });
-      }
+  try {
+    const data = await Posts.find()
+      .select("-content")
+      .skip((pageNum - 1) * pageSize)
+      .limit(pageSize);
+    if (!data) {
+      res.status(404).json({
+        success: false,
+        msg: "404 Not Found",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      page: pageNum,
+      data: data,
     });
+  } catch (err) {
+    return res
+      .status(400)
+      .json({ success: false, msg: "데이터 형식이 올바르지 않습니다" });
+  }
 });
 
 router.post("/posts", (req, res) => {
@@ -35,14 +39,16 @@ router.post("/posts", (req, res) => {
         return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
       }
 
-      await Posts.create(postId, user, password, title, content);
+      await Posts.create({postId, user, password, title, content});
       res.status(200).json({ msg: "잘 저장됬슈" });
     } catch (err) {
       if (err.code === 11000) {
         //postId값이 중복됬을경우에만 다시 실행
         savePost();
       } else {
-        res.status(500).json({ msg: "예기치 못한 오률 발생" });
+        res.status(500).json({ 
+          success:false,
+          msg: "예기치 못한 오률 발생" });
       }
     }
   };
@@ -54,14 +60,16 @@ router.get("/posts/:postId", async (req, res) => {
   if (!postId) {
     res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
   }
-  await Posts.findOne({ postId })
-    .select("-password")
-    .exec((err, data) => {
-      if (err) {
-        res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다." });
-      }
+  try {
+    const data = await Posts.findOne({ postId }).select("-password");
+    if (!data) {
+      res.status(404).json({ msg: "데이터를 찾을 수 없습니다" });
+    } else {
       res.status(200).json({ data: data });
-    });
+    }
+  } catch (err) {
+    res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
+  }
 });
 
 router.put("/posts/:postId", async (req, res) => {
@@ -103,7 +111,9 @@ router.delete("/posts/:postId", async (req, res) => {
     }
     res.status(200).json({ msg: "게시글을 삭제하였습니다." });
   } catch (err) {
-    return res.status(500).json({ msg: "예기치 못한 오률 발생" });
+    return res.status(500).json({ 
+      error:err,
+      msg: "예기치 못한 오률 발생" });
   }
 });
 

@@ -20,6 +20,10 @@ const commentsSchema ={
     createdAt:{
         type:Date,
         default:Date.now
+    },
+    postId:{
+        type:String,
+        required:true
     }
 
 }
