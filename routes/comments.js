@@ -16,7 +16,7 @@ router.post("/posts/:postId/comments", async (req, res) => {
   const createComment = async () => {
     try {
       await Comments.create({ user, password, comment, commentId, postId });
-      res.status(200).json({ msg: "댓글을 생성하였습니다" });
+      res.status(200).json({ success: true, msg: "댓글을 생성하였습니다." });
     } catch (err) {
       if (err.code === 11000) {
         //만약에 commentId가 중첩되었을 경우
@@ -40,7 +40,6 @@ router.get("/posts/:postId/comments", async (req, res) => {
   try {
     const comments = await Comments.find({ postId }).select("-password -postId")
     console.log(comments)
-    res.send({data:comments});
     return res.status(200).json({
       success: true,
       data: comments
