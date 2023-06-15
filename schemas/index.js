@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const connect = () => {
   mongoose
-    .connect("mongodb://localhost:27017/spa_mall")  //몽고db를 통해서 연결을 하며, 어떤주소:localhost:27017로 연결을 하며,
+    .connect("mongodb://127.0.0.1:27017/spa_mall")  //몽고db를 통해서 연결을 하며, 어떤주소:localhost:27017로 연결을 하며,
     .catch(err => console.log(err)); //spa_mall이라는 db명을 이용해서 연결
 };
 
