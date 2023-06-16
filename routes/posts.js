@@ -7,13 +7,11 @@ const { v4: uuidv4 } = require("uuid");
 router.get("/posts", async (req, res) => {
   const pageNum = req.query.pageNum ? req.query.pageNum : 1;
   const pageSize = req.query.pageSize ? req.query.pageSize : 10;
-  console.log(pageNum,pageSize)
   try {
     const data = await Posts.find()
       .select("-content")
       .skip((pageNum - 1) * pageSize)
       .limit(Number(pageSize));
-    console.log(data);
     if (data.length === 0) {
       res.status(404).json({
         success: false,
@@ -63,7 +61,6 @@ router.post("/posts", async (req, res) => {
 
 router.get("/posts/:postId", async (req, res) => {
   const { postId } = req.params;
-  console.log(postId);
   if (!postId) {
     return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
   }
