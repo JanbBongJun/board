@@ -18,7 +18,7 @@ router
     try {
       const postInfo = await Posts.create({posts:{ nickname, title, content }});
     
-      return res.status(200).json({ msg: "잘 저장됬슈" });
+      return res.status(200).json({ msg: "게시글이 저장되었습니다" });
     } catch (err) {
       console.log(err)
       res.status(500).json({

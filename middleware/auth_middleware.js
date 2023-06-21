@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 const User = require("../schemas/user");
-const mongoose = require("mongoose")
 
 module.exports = async (req, res, next) => {
   const { Authorization } = req.cookies;
@@ -19,7 +18,7 @@ module.exports = async (req, res, next) => {
     // console.log(user)
     if (!user) {
       res.clearCookie("Authorization");
-      return res.status(401).json({ message: " " });
+      return res.status(401).json({ message: "유효하지 않은 토큰입니다." });
     }
     res.locals.user = user;
     next();
