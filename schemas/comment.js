@@ -1,29 +1,24 @@
 const mongoose = require("mongoose");
 
 const commentsSchema ={
-    user : {
+    nickname : {
         type: String,
+        ref:'User'
     },
-    password : {
-        type: String,
-        required:true
-    },
+
     comment:{
         type:String,
         required:true
     },
-    commentId:{
-        type:String,
-        required:true,
-        unique:true
-    },
+
     createdAt:{
         type:Date,
         default:Date.now
     },
+
     postId:{
-        type:String,
-        required:true
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Posts'
     }
 
 }

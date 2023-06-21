@@ -25,3 +25,5 @@ module.exports = async (req, res, next) => {
     return res.status(401).json({message : "로그인 후 이용가능한 기능입니다"})
   }
 };
+
+//권한확인 완료
