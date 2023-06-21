@@ -1,28 +1,31 @@
 const jwt = require("jsonwebtoken");
 const User = require("../schemas/user");
+const mongoose = require("mongoose")
 
 module.exports = async (req, res, next) => {
   const { Authorization } = req.cookies;
-
   const [authType, authToken] = (Authorization ?? "").split(" ");
-
-  if (!authToken || !authType)
+  // console.log("Authorization:"+Authorization)
+  // console.log("authType:"+authType);
+  // console.log("authToken:"+authToken)
+  if (!authToken || authType!=="Bearer")
     return res
       .status(401)
       .json({ message: "로그인 후 이용가능한 기능입니다." });
-
+  
   try {
-    const { userId } = jwt.verify(authToken, "customized-secret-key");
-    const user = await User.findById(userId).exec();
+    const { nickname } = jwt.verify(authToken, "customized-secret-key");
+    const user = await User.findOne({nickname}).exec();
+    // console.log(user)
     if (!user) {
-      res.clearCookie("authorization");
+      res.clearCookie("Authorization");
       return res.status(401).json({ message: " " });
     }
     res.locals.user = user;
     next();
   } catch (err) {
-    res.clearCookie("authorization");
-    return res.status(401).json({message : "로그인 후 이용가능한 기능입니다"})
+    res.clearCookie("Authorization");
+    return res.status(402).json({message : "로그인 후 이용가능한 기능입니다"})
   }
 };
 

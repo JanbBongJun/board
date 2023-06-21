@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const router = express.Router();
 const Comments = require("../schemas/comment.js");
 const Posts = require("../schemas/post.js");
-const auth_middleware = require("../auth_middleware");
+const auth_middleware = require("../middleware/auth_middleware");
 
 router.post("/posts/:postId/comments", auth_middleware, async (req, res) => {
   const { postId } = req.params;
@@ -13,7 +13,7 @@ router.post("/posts/:postId/comments", auth_middleware, async (req, res) => {
   if (!user || !comment || !postId) {
     return res.status(404).json({ msg: "데이터 형식이 올바르지 않습니다" });
   }
-  const post = await Posts.findById(mongoose.Types.ObjectId(postId));
+  const post = await Posts.findById(new mongoose.Types.ObjectId(postId));
   if (!post) {
     return res.status(401).json({ message: "게시글을 찾지 못했습니다." });
   }
@@ -64,8 +64,8 @@ router.put(
     try {
       const updatedComment = await Comments.findOneAndUpdate(
         {
-          postId: mongoose.Types.ObjectId(postId),
-          _id: mongoose.Types.ObjectId(commentId),
+          postId:new mongoose.Types.ObjectId(postId),
+          _id:new mongoose.Types.ObjectId(commentId),
           nickname,
         },
         { comment },
@@ -92,8 +92,8 @@ router.delete(
     }
     try {
       const deletedComment = await Comments.findOneAndDelete({
-        postId: mongoose.Types.ObjectId(postId),
-        _id: mongoose.Types.ObjectId(commentId),
+        postId:new mongoose.Types.ObjectId(postId),
+        _id:new mongoose.Types.ObjectId(commentId),
         nickname,
       });
       if (!deletedComment) {

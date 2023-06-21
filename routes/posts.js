@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Posts = require("../schemas/post.js");
-const auth_middleware = require("../auth_middleware");
+const auth_middleware = require("../middleware/auth_middleware");
 const { default: mongoose } = require("mongoose");
 const user = require("../schemas/user.js");
 
@@ -14,11 +14,13 @@ router
     if (!nickname || !title || !content) {
       return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
     }
-
+    console.log(nickname+title+content)
     try {
-      await Posts.create({ nickname, title, content });
+      const postInfo = await Posts.create({posts:{ nickname, title, content }});
+    
       return res.status(200).json({ msg: "잘 저장됬슈" });
     } catch (err) {
+      console.log(err)
       res.status(500).json({
         success: false,
         msg: "예기치 못한 오류 발생",
@@ -63,7 +65,7 @@ router
     }
     try {
       const data = await Posts.findOne({
-        _id: mongoose.Types.ObjectId(postId),
+        _id: new mongoose.Types.ObjectId(postId),
       });
       if (!data) {
         return res.status(404).json({ msg: "데이터를 찾을 수 없습니다" });
@@ -71,6 +73,7 @@ router
         return res.status(200).json({ success: true, data: data });
       }
     } catch (err) {
+      console.log(err)
       return res.status(500).json({ msg: "예기치 못한 오류 발생" });
     }
   })
@@ -91,12 +94,13 @@ router
     }
     
     try {
-      const updatePost = await Posts.findByIdAndUpdate(mongoose.Types.ObjectId(postId),{$set:{title, content}},{new:true});
+      const updatePost = await Posts.findByIdAndUpdate(new mongoose.Types.ObjectId(postId),{$set:{'posts.title':title, 'posts.content':content}},{new:true});
       if (!updatePost) {
         return res
           .status(404)
           .json({ msg: "게시글 조회에 실패하였습니다." });
       }
+      console.log(updatePost)
       return res.status(200).json({ msg: "수정이 정상적으로 완료되었습니다" });
     } catch (err) {
       return res.status(500).json({ msg: "예기치 못한 오류 발생" });
@@ -109,7 +113,7 @@ router
       return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다." });
     }
     try {
-      const data = await Posts.findOneAndDelete({ _id: mongoose.Types.ObjectId(postId) });
+      const data = await Posts.findOneAndDelete({ _id:new mongoose.Types.ObjectId(postId) });
       if (!data) {
         return res.status(404).json({ msg: "게시글 조회에 실패하였습니다" });
       }

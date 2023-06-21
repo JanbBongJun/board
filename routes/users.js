@@ -22,7 +22,7 @@ router.post("/signup", async (req, res) => {
       .json({ message: "패스워드에 닉네임이 포함되어 있습니다." });
   }
   try {
-    const user = User.findOne({ nickname }).exec();
+    const user =await User.findOne({ nickname }).exec();
     if(user){
         return res.status(412).json({message: "중복된 닉네임입니다."});
     }
@@ -32,5 +32,6 @@ router.post("/signup", async (req, res) => {
     res.status(400).json({message: "요청한 데이터 형식이 올바르지 않습니다."})
   }
 });
+module.exports = router;
 
-//회원가입 완료
+//회원가입 완료 ok
