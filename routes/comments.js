@@ -9,8 +9,7 @@ router.post("/posts/:postId/comments", auth_middleware, async (req, res) => {
   const { postId } = req.params;
   const { nickname } = res.locals.user;
   const { comment } = req.body;
-
-  if (!user || !comment || !postId) {
+  if (!nickname || !comment || !postId) {
     return res.status(404).json({ msg: "데이터 형식이 올바르지 않습니다" });
   }
   const post = await Posts.findById(new mongoose.Types.ObjectId(postId));
