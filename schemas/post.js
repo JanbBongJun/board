@@ -26,8 +26,6 @@ const postsSchema ={
         type:Date,
         default:Date.now
     }
-
-
 }
 
 module.exports = mongoose.model("Posts", postsSchema);

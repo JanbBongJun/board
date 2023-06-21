@@ -1,12 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const Posts = require("../schemas/post.js");
+const auth_middleware = require("../auth_middleware");
 const { v4: uuidv4 } = require("uuid");
 
 // 쿼리 스트링을 받아서 페이지네이션
 router.get("/posts", async (req, res) => {
   const pageNum = req.query.pageNum ? req.query.pageNum : 1;
   const pageSize = req.query.pageSize ? req.query.pageSize : 10;
+
   try {
     const data = await Posts.find()
       .select("-content")
@@ -33,7 +35,7 @@ router.get("/posts", async (req, res) => {
   }
 });
 
-router.post("/posts", async (req, res) => {
+router.post("/posts",auth_middleware ,async (req, res) => {
   try {
     const postId = uuidv4(); // 임의의 문자열 생성
     const { user, password, title, content } = req.body;
@@ -75,7 +77,7 @@ router.get("/posts/:postId", async (req, res) => {
     return res.status(500).json({ msg: "예기치 못한 오류 발생" });
   }
 });
-router.put("/posts/:postId", async (req, res) => {
+router.put("/posts/:postId",auth_middleware ,async (req, res) => {
   const { postId } = req.params;
   const { password, title, content } = req.body;
   if (!password || !title || !content || !postId) {
@@ -101,7 +103,7 @@ router.put("/posts/:postId", async (req, res) => {
   }
 });
 
-router.delete("/posts/:postId", async (req, res) => {
+router.delete("/posts/:postId",auth_middleware , async (req, res) => {
   const { postId } = req.params;
   const { password } = req.body;
   if (!password || !postId) {

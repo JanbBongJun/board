@@ -1,16 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const Comments = require("../schemas/comment.js");
+const auth_middleware = require("../auth_middleware")
 const { v4: uuidv4 } = require("uuid");
 
-router.post("/posts/:postId/comments", async (req, res) => {
+router.post("/posts/:postId/comments", auth_middleware, (req, res) => {
   const { postId } = req.params;
   console.log(postId);
   const commentId = uuidv4(); //임의의 문자열 생성
   const { user, password, comment } = req.body;
 
   if (!user || !password || !comment || !postId) {
-    return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
+    return res.status(404).json({ msg: "데이터 형식이 올바르지 않습니다" });
   }
 
   const createComment = async () => {
@@ -22,7 +23,7 @@ router.post("/posts/:postId/comments", async (req, res) => {
         //만약에 commentId가 중첩되었을 경우
         createComment();
       } else {
-        res.status(500).json({ msg: "예기치 못한 오률 발생" });
+        res.status(400).json({ msg: "예기치 못한 오률 발생" });
       }
     }
   };
@@ -51,7 +52,7 @@ router.get("/posts/:postId/comments", async (req, res) => {
     res.status(500).json({ msg: "예기치 못한 오률 발생" });
   }
 });
-router.put("/posts/:postId/comments/:commentId", async (req, res) => {
+router.put("/posts/:postId/comments/:commentId",auth_middleware ,async (req, res) => {
   const { postId, commentId } = req.params;
   const { password, comment } = req.body;
   if (!postId || !commentId) {
@@ -74,7 +75,7 @@ router.put("/posts/:postId/comments/:commentId", async (req, res) => {
   }
 });
 
-router.delete("/posts/:postId/comments/:commentId", async (req, res) => {
+router.delete("/posts/:postId/comments/:commentId", auth_middleware, async (req, res) => {
   const { postId, commentId } = req.params;
   if (!postId || !commentId) {
     return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
