@@ -9,8 +9,10 @@ router.post("/posts/:postId/comments", auth_middleware, async (req, res) => {
   const { postId } = req.params;
   const { nickname } = res.locals.user;
   const { comment } = req.body;
-  if (!nickname || !comment || !postId) {
+  if (!nickname) {
     return res.status(404).json({ msg: "데이터 형식이 올바르지 않습니다" });
+  } else if (!comment) {
+    return res.status(404).json({ msg: "댓글 내용을 입력해주세요" });
   }
   const post = await Posts.findById(new mongoose.Types.ObjectId(postId));
   if (!post) {
@@ -30,14 +32,12 @@ router.get("/posts/:postId/comments", async (req, res) => {
     ? req.query.commentPageNum
     : 1;
   const commentSize = req.query.commentSize ? req.query.commentSize : 10;
-  if (!postId || !commentPageNum || !commentSize) {
+  if (!commentPageNum || !commentSize) {
     return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
   }
   try {
     const comments = await Comments.find({ postId }).select("-postId");
-    if (comments.length === 0) {
-      res.status(404).json({ msg: "저장된 댓글이 존재하지 않습니다." });
-    }
+
     return res.status(200).json({
       success: true,
       data: comments,
@@ -53,7 +53,7 @@ router.put(
     const { postId, commentId } = req.params;
     const { comment } = req.body;
     const { nickname } = res.locals.user;
-    if (!postId || !commentId) {
+    if (!commentId) {
       return res.status(400).json({ msg: "데이터 형식이 올바르지 않습니다" });
     } else if (!nickname || !comment) {
       return res
@@ -63,8 +63,8 @@ router.put(
     try {
       const updatedComment = await Comments.findOneAndUpdate(
         {
-          postId:new mongoose.Types.ObjectId(postId),
-          _id:new mongoose.Types.ObjectId(commentId),
+          postId: new mongoose.Types.ObjectId(postId),
+          _id: new mongoose.Types.ObjectId(commentId),
           nickname,
         },
         { comment },
@@ -86,13 +86,13 @@ router.delete(
   async (req, res) => {
     const { postId, commentId } = req.params;
     const { nickname } = res.locals.user;
-    if (!postId || !commentId) {
+    if (!commentId) {
       return res.status(400).json({ msg: "url이 올바르지 않습니다" });
     }
     try {
       const deletedComment = await Comments.findOneAndDelete({
-        postId:new mongoose.Types.ObjectId(postId),
-        _id:new mongoose.Types.ObjectId(commentId),
+        postId: new mongoose.Types.ObjectId(postId),
+        _id: new mongoose.Types.ObjectId(commentId),
         nickname,
       });
       if (!deletedComment) {
