@@ -21,8 +21,3 @@ router.post("/login", async (req, res) => {
   }
 });
 module.exports = router;
-
-//로그인 기능 완료 ok
-//header.payload.signature = 토큰을 통해서 암호화된 값 = 금고
-//금고를 해제하기 위한 key 
-//금고 안에 저장된 payload가 있을겁니다.
