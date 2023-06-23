@@ -5,6 +5,7 @@ const User = require("../schemas/user");
 
 router.post("/signup", async (req, res) => {
   const { nickname, password, confirm } = req.body;
+  
   const nicknameRegexp = /^[a-zA-Z0-9]{3,}$/;
   if (!nicknameRegexp.test(nickname)) {
     return res

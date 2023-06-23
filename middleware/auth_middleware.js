@@ -4,12 +4,8 @@ const User = require("../schemas/user");
 module.exports = async (req, res, next) => {
   const { Authorization } = req.cookies;
   const [authType, authToken] = (Authorization ?? "").split(" ");
-  // console.log("Authorization:"+Authorization)
-  // console.log("authType:"+authType);
-  // console.log("authToken:"+authToken)
+
   if (!authToken || authType !== "Bearer") {
-    console.log(authToken);
-    console.log(authType);
     return res
       .status(401)
       .json({ message: "로그인 후 이용가능한 기능입니다." });
@@ -17,7 +13,6 @@ module.exports = async (req, res, next) => {
   try {
     const { nickname } = jwt.verify(authToken, "customized-secret-key");
     const user = await User.findOne({ nickname }).exec();
-    // console.log(user)
     if (!user) {
       res.clearCookie("Authorization");
       return res.status(401).json({ message: "유효하지 않은 토큰입니다." });
